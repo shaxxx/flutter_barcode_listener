@@ -1,0 +1,1 @@
+library flutter_barcode_listener;
