@@ -23,7 +23,7 @@ All hardware barcode devices have few things in common
 - all keyboard events are fired in extremly small time frame (less than 300 ms for non QR codes)
 - barcode is terminated with special character (line feed character in majority)
 
-So to figure out what is actual barcode and what is simple keyboard event that should be ignored this packages uses following logic
+So to figure out what is actual barcode and what is simple keyboard event that should be ignored this package uses following logic
 1. listen for all raw keyboard events
 2. filter out only non NULL characters
 3. buffer events for certain time frame (defaults to 500 ms). After this we have list of characters pressed in certain time frame that we can filter some more.
