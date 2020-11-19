@@ -13,7 +13,7 @@ class BarcodeListenerWidget extends StatefulWidget {
   final Widget child;
   final BarcodeScannedCallback _onBarcodeScanned;
   final Duration _bufferDuration;
-  final int _barcodeEndCharCode;
+  final LogicalKeyboardKey _barcodeEndCharCode;
   BarcodeListenerWidget({
     Key key,
     this.child,
@@ -22,8 +22,8 @@ class BarcodeListenerWidget extends StatefulWidget {
     // Time frame to listen for keyboard events as one barcode scan
     Duration bufferDuration = const Duration(milliseconds: 500),
     // Code of the barcode termination character,
-    // defaults to standard line feed character(10)
-    int barcodeEndCharCode = 10,
+    // defaults to platform enter key
+    LogicalKeyboardKey barcodeEndCharCode = LogicalKeyboardKey.enter,
   })  : _onBarcodeScanned = onBarcodeScanned,
         _bufferDuration = bufferDuration,
         _barcodeEndCharCode = barcodeEndCharCode,
@@ -41,22 +41,21 @@ class _BarcodeListenerWidgetState extends State<BarcodeListenerWidget> {
   StreamSubscription<String> _subscription;
   final BarcodeScannedCallback _onBarcodeScannedCallback;
   final Duration _bufferDuration;
-  final int _barcodeEndCharCode;
+  final LogicalKeyboardKey _barcodeEndCharCode;
 
-  StreamController<RawKeyDownEvent> _controller =
-      StreamController<RawKeyDownEvent>();
+  StreamController<RawKeyUpEvent> _controller =
+      StreamController<RawKeyUpEvent>();
   _BarcodeListenerWidgetState(this._onBarcodeScannedCallback,
       this._bufferDuration, this._barcodeEndCharCode) {
     RawKeyboard.instance.addListener(_keyBoardCallback);
     _subscription = _controller.stream
-        .where((event) => event.character != null)
+        .where((event) => event.logicalKey.keyId != null)
         .buffer(Stream.periodic(_bufferDuration, (i) => i))
         .where((event) => event.length > 1)
-        .where((event) =>
-            listEquals(event.last.character.codeUnits, [_barcodeEndCharCode]))
+        .where(
+            (event) => event.last.logicalKey.keyId == _barcodeEndCharCode.keyId)
         .map((event) => event.toList()..removeLast())
-        .map((event) =>
-            event.map((e) => e.character.codeUnits).expand((i) => i).toList())
+        .map((event) => event.map((e) => e.logicalKey.keyId).toList())
         .map((event) => String.fromCharCodes(event))
         .listen((event) {
       _onBarcodeScannedCallback?.call(event);
@@ -64,7 +63,7 @@ class _BarcodeListenerWidgetState extends State<BarcodeListenerWidget> {
   }
 
   _keyBoardCallback(RawKeyEvent keyEvent) {
-    if (keyEvent is RawKeyDownEvent) {
+    if (keyEvent is RawKeyUpEvent) {
       _controller.sink.add(keyEvent);
     }
   }

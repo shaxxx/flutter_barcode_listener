@@ -3,7 +3,7 @@ It takes 4 parameters
 - child widget to display
 - onBarcodeScanned callback function that has String parameter
 - bufferDuration that defaults to 500 ms and basically tells the package how fast you expect barcode to be read. Make this value as low as you can but make sure entire barcode is beeing read. For example if you have large QR code of 200 characters it will take more, and on another hande, simple EAN13 will usually take 100 ms.
-- barcodeEndCharCode that defaults to 10 which is ASCII decimal value for Line Feed character.
+- barcodeEndCharCode that defaults to LogicalKeyboardKey.enter.
 
 Check out example project for additional details.
 
