@@ -5,7 +5,7 @@ Listen for any hardware barcode scanner
 ## Problems with barcode scanning
 If you need to get barcode scanned from some hardware barcode scanner you generally have few ways to do it.
 
-1.  implement some text input control (IE. TextEdit), call focus on it and make the scan
+1. implement some text input control (IE. TextEdit), call focus on it and make the scan
 2. listen for some special system event (IE. intent fired from Android service)
 3. listen for raw keyboard events
 
