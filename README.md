@@ -28,7 +28,7 @@ So to figure out what is actual barcode and what is simple keyboard event that s
 2. filter out only non NULL characters
 3. buffer events for certain time frame (defaults to 500 ms). After this we have list of characters pressed in certain time frame that we can filter some more.
 4. filter out only events that have 2 characters or more (at lease one for barcode and one for termination character.)
-5. filter out ony events that end with termination character (defaults to platform enter key)
+5. filter out ony events that end with termination character (enter key)
 6. remove termination character
 6. call the callback function with result.
 
