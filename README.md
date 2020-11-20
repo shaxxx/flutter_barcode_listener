@@ -20,16 +20,14 @@ And there's third way, simply listen for raw keyboard events and figure out what
 ## Implementation idea
 All hardware barcode devices have few things in common
 - they act as a keyboard when barcode is scanned
-- all keyboard events are fired in extremly small time frame (less than 300 ms for non QR codes)
+- all keyboard events are fired in extremly small time frame (less than 100 ms between each character)
 - barcode is terminated with special character (enter in majority)
 
 So to figure out what is actual barcode and what is simple keyboard event that should be ignored this package uses following logic
-1. listen for all raw keyboard events
-2. filter out only non NULL characters
-3. buffer events for certain time frame (defaults to 500 ms). After this we have list of characters pressed in certain time frame that we can filter some more.
-4. filter out only events that have 2 characters or more (at lease one for barcode and one for termination character.)
-5. filter out ony events that end with termination character (enter key)
-6. remove termination character
-6. call the callback function with result.
+1. listen for physical keyboard raw key up event
+2. filter out only 'REAL' characters (ASCII codes lower than 256, without special characters except enter)
+3. on each new key check if previous key is older than `bufferDuration`, if it's older clear internal buffer.
+4. check if new key is enter key, if it is call `onBarcodeScanned` callback and clear buffer
+5. if it's not enter key just append it to internal buffer;
 
 Basically it translates to: if you get bunch of keys comming really fast that end with enter key it's a BINGO.

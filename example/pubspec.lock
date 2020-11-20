@@ -233,12 +233,10 @@ packages:
   flutter_barcode_listener:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: c07e03df629a6aa56cc86168003bb4d4ff459401
-      url: "https://github.com/shaxxx/flutter_barcode_listener.git"
-    source: git
-    version: "0.0.1"
+      path: ".."
+      relative: true
+    source: path
+    version: "0.0.3"
   flutter_beep:
     dependency: transitive
     description:
@@ -522,13 +520,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "7.3.0"
-  rxdart:
-    dependency: transitive
-    description:
-      name: rxdart
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.24.1"
   shared_preferences:
     dependency: "direct main"
     description:

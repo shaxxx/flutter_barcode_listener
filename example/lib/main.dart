@@ -50,10 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
             visible = info.visibleFraction > 0;
           },
           key: Key('visible-detector-key'),
-          child: BarcodeListenerWidget(
-            // override default buffer window with value of 1 second
-            // if for example we expect to read large QR codes
-            bufferDuration: const Duration(milliseconds: 1000),
+          child: BarcodeKeyboardListener(
             onBarcodeScanned: (barcode) {
               if (!visible) return;
               print(barcode);
