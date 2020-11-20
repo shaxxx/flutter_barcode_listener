@@ -1,9 +1,9 @@
-name: barcode_listener_example
-description: Barcode listener example
+name: brum
+description: Brzo robno za mobilne uređaje.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -15,17 +15,32 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.8.0 <3.0.0"
 
 dependencies:
-  visibility_detector: ^0.1.5
-  flutter_barcode_listener:
-    path: ../
   flutter:
     sdk: flutter
+
+  shared_preferences: ^0.5.12+2
+  bloc: ^6.1.0
+  flutter_bloc: ^6.1.0
+  reactive_forms: ^7.0.10
+  quiver: ^2.1.4+1
+  badges: ^1.1.4
+  package_info: ^0.4.3+2
+  connectivity: ^2.0.1
+  uuid: ^2.2.2
+  barras: ^0.0.2
+  keyboard_actions: ^3.3.1+1
+  http: ^0.12.2
+  version: ^1.2.0
+  flutter_downloader: ^1.5.2
+  visibility_detector: ^0.1.5
+  flutter_barcode_listener: 
+    git: https://github.com/shaxxx/flutter_barcode_listener.git
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -35,13 +50,23 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  bloc_test: ^7.1.0
+  mockito: ^4.1.3
+  pedantic: ^1.0.0
+  flutter_launcher_icons: ^0.7.4
+flutter_icons:
+  image_path_android: "assets/icons/BRUM_1024_1024_Android.png"
+  image_path_ios: "assets/icons/BRUM_1024_1024_iOS.png"
+  android: true # can specify file name here e.g. "ic_launcher"
+  ios: true # can specify file name here e.g. "My-Launcher-Icon"
+  adaptive_icon_background: "#393185" # only available for Android 8.0 devices and above
+  adaptive_icon_foreground: "assets/icons/BRUM_432_432_adaptive.png" # only available for Android 8.0 devices and above
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter.
 flutter:
-
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
@@ -49,7 +74,7 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   # assets:
-  #   - images/a_dot_burr.jpeg
+  #   - assets/icons/BRUM_splash.png
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
