@@ -24,13 +24,13 @@ class BarcodeKeyboardListener extends StatefulWidget {
   /// that end with line feed character and call callback function with result.
   /// Keep in mind this widget will listen for events even when not visible.
   BarcodeKeyboardListener(
-      {Key key,
+      {Key? key,
 
       /// Child widget to be displayed
-      @required this.child,
+      required this.child,
 
       /// Callback to be called when barcode is scanned
-      @required Function(String) onBarcodeScanned,
+      required Function(String) onBarcodeScanned,
 
       /// Maximum time between two key events.
       /// If time between two key events is longer than this value
@@ -38,7 +38,6 @@ class BarcodeKeyboardListener extends StatefulWidget {
       Duration bufferDuration = hundredMs})
       : _onBarcodeScanned = onBarcodeScanned,
         _bufferDuration = bufferDuration,
-        assert(child != null),
         super(key: key);
   @override
   _BarcodeKeyboardListenerState createState() =>
@@ -51,13 +50,13 @@ const int lineFeed = 10;
 
 class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
   List<int> _scannedCharCodes = [];
-  DateTime _lastScannedCharCodeTime;
-  StreamSubscription<int> _keyboardSubscription;
+  DateTime? _lastScannedCharCodeTime;
+  late StreamSubscription<int?> _keyboardSubscription;
 
   final BarcodeScannedCallback _onBarcodeScannedCallback;
   final Duration _bufferDuration;
 
-  final _controller = StreamController<int>();
+  final _controller = StreamController<int?>();
   _BarcodeKeyboardListenerState(
       this._onBarcodeScannedCallback, this._bufferDuration) {
     RawKeyboard.instance.addListener(_keyBoardCallback);
@@ -66,22 +65,21 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
         .listen(onKeyEvent);
   }
 
-  void onKeyEvent(int charCode) {
+  void onKeyEvent(int? charCode) {
     //remove any pending characters older than bufferDuration value
     checkPendingCharCodesToClear();
     _lastScannedCharCodeTime = DateTime.now();
     if (charCode == lineFeed) {
-      _onBarcodeScannedCallback?.call(String.fromCharCodes(_scannedCharCodes));
+      _onBarcodeScannedCallback.call(String.fromCharCodes(_scannedCharCodes));
       resetScannedCharCodes();
     } else {
       //add character to list of scanned characters;
-      _scannedCharCodes.add(charCode);
+      _scannedCharCodes.add(charCode!);
     }
   }
 
   void checkPendingCharCodesToClear() {
-    if (_lastScannedCharCodeTime == null) return;
-    if (_lastScannedCharCodeTime
+    if (_lastScannedCharCodeTime!
         .isBefore(DateTime.now().subtract(_bufferDuration))) {
       resetScannedCharCodes();
     }
@@ -100,18 +98,14 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
     if (keyEvent.logicalKey.keyId > 255 &&
         keyEvent.data.logicalKey != LogicalKeyboardKey.enter) return;
     if (keyEvent is RawKeyUpEvent) {
-      if (keyEvent.data != null) {
-        if (keyEvent.data is RawKeyEventDataAndroid) {
-          _controller.sink
-              .add(((keyEvent.data) as RawKeyEventDataAndroid).codePoint);
-        } else if (keyEvent.data is RawKeyEventDataFuchsia) {
-          _controller.sink
-              .add(((keyEvent.data) as RawKeyEventDataFuchsia).codePoint);
-        } else if (keyEvent.data.logicalKey == LogicalKeyboardKey.enter) {
-          _controller.sink.add(lineFeed);
-        }
-      } else {
-        _controller.sink.add(keyEvent.logicalKey.keyId);
+      if (keyEvent.data is RawKeyEventDataAndroid) {
+        _controller.sink
+            .add(((keyEvent.data) as RawKeyEventDataAndroid).codePoint);
+      } else if (keyEvent.data is RawKeyEventDataFuchsia) {
+        _controller.sink
+            .add(((keyEvent.data) as RawKeyEventDataFuchsia).codePoint);
+      } else if (keyEvent.data.logicalKey == LogicalKeyboardKey.enter) {
+        _controller.sink.add(lineFeed);
       }
     }
   }
@@ -123,7 +117,7 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
 
   @override
   void dispose() {
-    _keyboardSubscription?.cancel();
+    _keyboardSubscription.cancel();
     _controller.close();
     RawKeyboard.instance.removeListener(_keyBoardCallback);
     super.dispose();
