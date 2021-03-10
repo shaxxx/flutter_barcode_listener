@@ -71,6 +71,7 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
     _lastScannedCharCodeTime = DateTime.now();
     if (charCode == lineFeed) {
       _onBarcodeScannedCallback.call(String.fromCharCodes(_scannedCharCodes));
+
       resetScannedCharCodes();
     } else {
       //add character to list of scanned characters;
@@ -79,9 +80,11 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
   }
 
   void checkPendingCharCodesToClear() {
-    if (_lastScannedCharCodeTime!
-        .isBefore(DateTime.now().subtract(_bufferDuration))) {
-      resetScannedCharCodes();
+    if (_lastScannedCharCodeTime != null) {
+      if (_lastScannedCharCodeTime!
+          .isBefore(DateTime.now().subtract(_bufferDuration))) {
+        resetScannedCharCodes();
+      }
     }
   }
 
