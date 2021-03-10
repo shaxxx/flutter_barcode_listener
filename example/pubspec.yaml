@@ -18,27 +18,23 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.1+1
 
 environment:
-  sdk: ">=2.8.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  shared_preferences: ^0.5.12+2
+  shared_preferences: ^2.0.3
   bloc: ^6.1.0
-  flutter_bloc: ^6.1.0
-  reactive_forms: ^7.0.10
-  quiver: ^2.1.4+1
-  badges: ^1.1.4
-  package_info: ^0.4.3+2
-  connectivity: ^2.0.1
-  uuid: ^2.2.2
-  barras: ^0.0.2
-  keyboard_actions: ^3.3.1+1
-  http: ^0.12.2
+  flutter_bloc: ^6.1.0  
+  quiver: ^3.0.0
+  package_info: ^2.0.0
+  connectivity: ^3.0.2
+  uuid: ^3.0.1
+  http: ^0.13.0
   version: ^1.2.0
   flutter_downloader: ^1.5.2
-  visibility_detector: ^0.1.5
+  visibility_detector: ^0.2.0-nullsafety.1
   flutter_barcode_listener: 
     path: ../
 
@@ -53,7 +49,7 @@ dev_dependencies:
   bloc_test: ^7.1.0
   mockito: ^4.1.3
   pedantic: ^1.0.0
-  flutter_launcher_icons: ^0.7.4
+  flutter_launcher_icons: ^0.9.0
 flutter_icons:
   image_path_android: "assets/icons/BRUM_1024_1024_Android.png"
   image_path_ios: "assets/icons/BRUM_1024_1024_iOS.png"
