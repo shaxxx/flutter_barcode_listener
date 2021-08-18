@@ -1,3 +1,7 @@
+## [0.1.0] - Null safety
+
+* Migrated to null safety
+
 ## [0.0.3] - Updated example
 
 * Updated widget name
