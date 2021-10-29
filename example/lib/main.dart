@@ -51,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           key: Key('visible-detector-key'),
           child: BarcodeKeyboardListener(
+            bufferDuration: Duration(milliseconds: 200),
             onBarcodeScanned: (barcode) {
               if (!visible) return;
               print(barcode);

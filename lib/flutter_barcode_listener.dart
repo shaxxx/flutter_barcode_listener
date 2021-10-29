@@ -102,17 +102,27 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
         keyEvent.data.logicalKey != LogicalKeyboardKey.enter) return;
     if (keyEvent is RawKeyUpEvent) {
       if (keyEvent.data is RawKeyEventDataAndroid) {
-        _controller.sink
-            .add(String.fromCharCode(((keyEvent.data) as RawKeyEventDataAndroid).codePoint));
+        _controller.sink.add(String.fromCharCode(
+            ((keyEvent.data) as RawKeyEventDataAndroid).codePoint));
       } else if (keyEvent.data is RawKeyEventDataFuchsia) {
-        _controller.sink
-            .add(String.fromCharCode(((keyEvent.data) as RawKeyEventDataFuchsia).codePoint));
+        _controller.sink.add(String.fromCharCode(
+            ((keyEvent.data) as RawKeyEventDataFuchsia).codePoint));
       } else if (keyEvent.data.logicalKey == LogicalKeyboardKey.enter) {
         _controller.sink.add(lineFeed);
       } else if (keyEvent.data is RawKeyEventDataWeb) {
         _controller.sink.add(((keyEvent.data) as RawKeyEventDataWeb).keyLabel);
+      } else if (keyEvent.data is RawKeyEventDataLinux) {
+        _controller.sink
+            .add(((keyEvent.data) as RawKeyEventDataLinux).keyLabel);
+      } else if (keyEvent.data is RawKeyEventDataWindows) {
+        _controller.sink
+            .add(((keyEvent.data) as RawKeyEventDataWindows).keyLabel);
+      } else if (keyEvent.data is RawKeyEventDataMacOs) {
+        _controller.sink
+            .add(((keyEvent.data) as RawKeyEventDataMacOs).keyLabel);
+      } else if (keyEvent.data is RawKeyEventDataIos) {
+        _controller.sink.add(((keyEvent.data) as RawKeyEventDataIos).keyLabel);
       } else {
-        debugPrint('${keyEvent.character}');
         _controller.sink.add(keyEvent.character);
       }
     }
