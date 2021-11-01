@@ -1,3 +1,7 @@
+## [0.1.1] - Web and Desktop support
+
+* Implemented support for web, MacOs, Linux and Windows
+
 ## [0.1.0] - Null safety
 
 * Migrated to null safety
