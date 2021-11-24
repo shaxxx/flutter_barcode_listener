@@ -1,6 +1,6 @@
 name: flutter_barcode_listener
 description: Listen for any hardware barcode scanner without any manufacturer SDK
-version: 0.1.1
+version: 0.1.1+1
 homepage: https://github.com/shaxxx/flutter_barcode_listener
 
 environment:

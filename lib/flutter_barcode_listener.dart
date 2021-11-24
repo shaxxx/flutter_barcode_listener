@@ -115,8 +115,8 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
         _controller.sink
             .add(((keyEvent.data) as RawKeyEventDataLinux).keyLabel);
       } else if (keyEvent.data is RawKeyEventDataWindows) {
-        _controller.sink
-            .add(((keyEvent.data) as RawKeyEventDataWindows).keyLabel);
+        _controller.sink.add(String.fromCharCode(
+            ((keyEvent.data) as RawKeyEventDataWindows).characterCodePoint));
       } else if (keyEvent.data is RawKeyEventDataMacOs) {
         _controller.sink
             .add(((keyEvent.data) as RawKeyEventDataMacOs).keyLabel);
