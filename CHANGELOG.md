@@ -1,3 +1,7 @@
+## [0.1.1+1] - characterCodePoint instead of keyLabel for Windows 
+
+* Windows implementation now handles characterCodePoint instead of keyLabel
+
 ## [0.1.1] - Web and Desktop support
 
 * Implemented support for web, MacOs, Linux and Windows
