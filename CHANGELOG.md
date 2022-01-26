@@ -1,3 +1,7 @@
+## [0.1.1+2] - Changed MacOS implementation from keyLabel to characters
+
+* MacOS implementation now listens to `characters` instead of `keylabel`
+
 ## [0.1.1+1] - characterCodePoint instead of keyLabel for Windows 
 
 * Windows implementation now handles characterCodePoint instead of keyLabel
