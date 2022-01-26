@@ -1,3 +1,7 @@
+## [0.1.2] - Added useKeyDown parameter 
+
+* Implemented `useKeyDown` parameter to enable using `RawKeyDownEvent` instead of `RawKeyUpEvent`
+
 ## [0.1.1+1] - characterCodePoint instead of keyLabel for Windows 
 
 * Windows implementation now handles characterCodePoint instead of keyLabel

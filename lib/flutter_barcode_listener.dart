@@ -13,10 +13,13 @@ typedef BarcodeScannedCallback = void Function(String barcode);
 /// It will buffer all characters coming in specifed `bufferDuration` time frame
 /// that end with line feed character and call callback function with result.
 /// Keep in mind this widget will listen for events even when not visible.
+/// Windows seems to be using the [RawKeyDownEvent] instead of the
+/// [RawKeyUpEvent], this behaviour can be managed by setting [useKeyDownEvent].
 class BarcodeKeyboardListener extends StatefulWidget {
   final Widget child;
   final BarcodeScannedCallback _onBarcodeScanned;
   final Duration _bufferDuration;
+  final bool useKeyDownEvent;
 
   /// This widget will listen for raw PHYSICAL keyboard events
   /// even when other controls have primary focus.
@@ -26,11 +29,15 @@ class BarcodeKeyboardListener extends StatefulWidget {
   BarcodeKeyboardListener(
       {Key? key,
 
-      /// Child widget to be displayed
+      /// Child widget to be displayed.
       required this.child,
 
-      /// Callback to be called when barcode is scanned
+      /// Callback to be called when barcode is scanned.
       required Function(String) onBarcodeScanned,
+
+      /// When experiencing issueswith empty barcodes on Windows,
+      /// set this value to true. Default value is `false`.
+      this.useKeyDownEvent = false,
 
       /// Maximum time between two key events.
       /// If time between two key events is longer than this value
@@ -41,8 +48,8 @@ class BarcodeKeyboardListener extends StatefulWidget {
         super(key: key);
 
   @override
-  _BarcodeKeyboardListenerState createState() =>
-      _BarcodeKeyboardListenerState(_onBarcodeScanned, _bufferDuration);
+  _BarcodeKeyboardListenerState createState() => _BarcodeKeyboardListenerState(
+      _onBarcodeScanned, _bufferDuration, useKeyDownEvent);
 }
 
 const Duration aSecond = Duration(seconds: 1);
@@ -59,8 +66,10 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
 
   final _controller = StreamController<String?>();
 
-  _BarcodeKeyboardListenerState(
-      this._onBarcodeScannedCallback, this._bufferDuration) {
+  final bool _useKeyDownEvent;
+
+  _BarcodeKeyboardListenerState(this._onBarcodeScannedCallback,
+      this._bufferDuration, this._useKeyDownEvent) {
     RawKeyboard.instance.addListener(_keyBoardCallback);
     _keyboardSubscription =
         _controller.stream.where((char) => char != null).listen(onKeyEvent);
@@ -100,7 +109,8 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
   void _keyBoardCallback(RawKeyEvent keyEvent) {
     if (keyEvent.logicalKey.keyId > 255 &&
         keyEvent.data.logicalKey != LogicalKeyboardKey.enter) return;
-    if (keyEvent is RawKeyUpEvent) {
+    if ((!_useKeyDownEvent && keyEvent is RawKeyUpEvent) ||
+        (_useKeyDownEvent && keyEvent is RawKeyDownEvent)) {
       if (keyEvent.data is RawKeyEventDataAndroid) {
         _controller.sink.add(String.fromCharCode(
             ((keyEvent.data) as RawKeyEventDataAndroid).codePoint));
