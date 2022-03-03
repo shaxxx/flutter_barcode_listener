@@ -1,3 +1,9 @@
+## [0.1.3] - Fixed Windows support
+
+* Fix for empty scan on Windows
+* Added Windows example
+* Updated example to latest Flutter release
+
 ## [0.1.2] - Added useKeyDown parameter 
 
 * Implemented `useKeyDown` parameter to enable using `RawKeyDownEvent` instead of `RawKeyUpEvent`
