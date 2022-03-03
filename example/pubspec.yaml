@@ -1,5 +1,5 @@
-name: brum
-description: Brzo robno za mobilne uređaje.
+name: barcode_listener_example
+description: Example project for Flutter barcode listener.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
