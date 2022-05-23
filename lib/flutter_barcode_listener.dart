@@ -110,14 +110,14 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
         keyEvent.data.logicalKey != LogicalKeyboardKey.enter) return;
     if ((!_useKeyDownEvent && keyEvent is RawKeyUpEvent) ||
         (_useKeyDownEvent && keyEvent is RawKeyDownEvent)) {
-      if (keyEvent.data is RawKeyEventDataAndroid) {
+      if (keyEvent.data.logicalKey == LogicalKeyboardKey.enter) {
+        _controller.sink.add(lineFeed);
+      } else if (keyEvent.data is RawKeyEventDataAndroid) {
         _controller.sink.add(String.fromCharCode(
             ((keyEvent.data) as RawKeyEventDataAndroid).codePoint));
       } else if (keyEvent.data is RawKeyEventDataFuchsia) {
         _controller.sink.add(String.fromCharCode(
             ((keyEvent.data) as RawKeyEventDataFuchsia).codePoint));
-      } else if (keyEvent.data.logicalKey == LogicalKeyboardKey.enter) {
-        _controller.sink.add(lineFeed);
       } else if (keyEvent.data is RawKeyEventDataWeb) {
         _controller.sink.add(((keyEvent.data) as RawKeyEventDataWeb).keyLabel);
       } else if (keyEvent.data is RawKeyEventDataLinux) {
