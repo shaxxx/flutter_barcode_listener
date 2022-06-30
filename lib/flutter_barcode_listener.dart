@@ -66,7 +66,8 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
   final _controller = StreamController<String?>();
 
   final bool _useKeyDownEvent;
-
+  bool _lineFeedCall = false;
+  Timer? _timer;
   _BarcodeKeyboardListenerState(this._onBarcodeScannedCallback,
       this._bufferDuration, this._useKeyDownEvent) {
     RawKeyboard.instance.addListener(_keyBoardCallback);
@@ -78,7 +79,9 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
     //remove any pending characters older than bufferDuration value
     checkPendingCharCodesToClear();
     _lastScannedCharCodeTime = DateTime.now();
+    callWithoutLineFeed();
     if (char == lineFeed) {
+      _lineFeedCall = true;
       _onBarcodeScannedCallback.call(_scannedChars.join());
       resetScannedCharCodes();
     } else {
@@ -86,7 +89,20 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
       _scannedChars.add(char!);
     }
   }
-
+  void callWithoutLineFeed() {
+    if (_timer?.isActive ?? false) {
+      _timer?.cancel();
+    } else {
+      _timer = Timer(const Duration(milliseconds: 200), () {
+        if (!_lineFeedCall) {
+          _onBarcodeScannedCallback.call(_scannedChars.join());
+          resetScannedCharCodes();
+        }
+        _timer?.cancel();
+        _timer = null;
+      });
+    }
+  }
   void checkPendingCharCodesToClear() {
     if (_lastScannedCharCodeTime != null) {
       if (_lastScannedCharCodeTime!
