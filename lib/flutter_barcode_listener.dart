@@ -19,6 +19,7 @@ class BarcodeKeyboardListener extends StatefulWidget {
   final BarcodeScannedCallback _onBarcodeScanned;
   final Duration _bufferDuration;
   final bool useKeyDownEvent;
+  final bool useTimer;
 
   /// This widget will listen for raw PHYSICAL keyboard events
   /// even when other controls have primary focus.
@@ -38,6 +39,10 @@ class BarcodeKeyboardListener extends StatefulWidget {
       /// set this value to true. Default value is `false`.
       this.useKeyDownEvent = false,
 
+      /// if you don't care about linefeed, use timer
+      /// set this value to true. Default value is `false`.
+      this.useTimer = false,
+
       /// Maximum time between two key events.
       /// If time between two key events is longer than this value
       /// previous keys will be ignored.
@@ -48,7 +53,7 @@ class BarcodeKeyboardListener extends StatefulWidget {
 
   @override
   _BarcodeKeyboardListenerState createState() => _BarcodeKeyboardListenerState(
-      _onBarcodeScanned, _bufferDuration, useKeyDownEvent);
+      _onBarcodeScanned, _bufferDuration, useKeyDownEvent, useTimer);
 }
 
 const Duration aSecond = Duration(seconds: 1);
@@ -66,10 +71,11 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
   final _controller = StreamController<String?>();
 
   final bool _useKeyDownEvent;
-  bool _lineFeedCall = false;
+  final bool _useTimer;
   Timer? _timer;
+
   _BarcodeKeyboardListenerState(this._onBarcodeScannedCallback,
-      this._bufferDuration, this._useKeyDownEvent) {
+      this._bufferDuration, this._useKeyDownEvent, this._useTimer) {
     RawKeyboard.instance.addListener(_keyBoardCallback);
     _keyboardSubscription =
         _controller.stream.where((char) => char != null).listen(onKeyEvent);
@@ -79,9 +85,15 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
     //remove any pending characters older than bufferDuration value
     checkPendingCharCodesToClear();
     _lastScannedCharCodeTime = DateTime.now();
-    callWithoutLineFeed();
+    if (_useTimer) {
+      if (char != lineFeed) {
+        _scannedChars.add(char!);
+      }
+      callWithoutLineFeed();
+      return;
+    }
+
     if (char == lineFeed) {
-      _lineFeedCall = true;
       _onBarcodeScannedCallback.call(_scannedChars.join());
       resetScannedCharCodes();
     } else {
@@ -89,20 +101,18 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
       _scannedChars.add(char!);
     }
   }
+
   void callWithoutLineFeed() {
-    if (_timer?.isActive ?? false) {
-      _timer?.cancel();
-    } else {
-      _timer = Timer(const Duration(milliseconds: 200), () {
-        if (!_lineFeedCall) {
-          _onBarcodeScannedCallback.call(_scannedChars.join());
-          resetScannedCharCodes();
-        }
+    if (_timer == null || !_timer!.isActive) {
+      _timer = Timer(_bufferDuration, () {
+        _onBarcodeScannedCallback.call(_scannedChars.join());
+        resetScannedCharCodes();
         _timer?.cancel();
         _timer = null;
       });
     }
   }
+
   void checkPendingCharCodesToClear() {
     if (_lastScannedCharCodeTime != null) {
       if (_lastScannedCharCodeTime!
@@ -163,6 +173,9 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
   void dispose() {
     _keyboardSubscription.cancel();
     _controller.close();
+    if (_timer?.isActive ?? false) {
+      _timer?.cancel();
+    }
     RawKeyboard.instance.removeListener(_keyBoardCallback);
     super.dispose();
   }
