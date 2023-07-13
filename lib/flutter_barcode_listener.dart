@@ -67,6 +67,8 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
 
   final bool _useKeyDownEvent;
 
+  bool _isShiftPressed = false;
+
   _BarcodeKeyboardListenerState(this._onBarcodeScannedCallback,
       this._bufferDuration, this._useKeyDownEvent) {
     RawKeyboard.instance.addListener(_keyBoardCallback);
@@ -107,12 +109,23 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
 
   void _keyBoardCallback(RawKeyEvent keyEvent) {
     if (keyEvent.logicalKey.keyId > 255 &&
-        keyEvent.data.logicalKey != LogicalKeyboardKey.enter) return;
+        keyEvent.data.logicalKey != LogicalKeyboardKey.enter &&
+        keyEvent.data.logicalKey != LogicalKeyboardKey.shiftLeft) return;
     if ((!_useKeyDownEvent && keyEvent is RawKeyUpEvent) ||
         (_useKeyDownEvent && keyEvent is RawKeyDownEvent)) {
       if (keyEvent.data is RawKeyEventDataAndroid) {
-        _controller.sink.add(String.fromCharCode(
-            ((keyEvent.data) as RawKeyEventDataAndroid).codePoint));
+        if (keyEvent.data.logicalKey == LogicalKeyboardKey.shiftLeft) {
+          _isShiftPressed = true;
+        } else {
+          if (_isShiftPressed) {
+            _isShiftPressed = false;
+            _controller.sink.add(String.fromCharCode(
+                ((keyEvent.data) as RawKeyEventDataAndroid).codePoint).toUpperCase());
+          } else {
+            _controller.sink.add(String.fromCharCode(
+                ((keyEvent.data) as RawKeyEventDataAndroid).codePoint));
+          }
+        }
       } else if (keyEvent.data is RawKeyEventDataFuchsia) {
         _controller.sink.add(String.fromCharCode(
             ((keyEvent.data) as RawKeyEventDataFuchsia).codePoint));
