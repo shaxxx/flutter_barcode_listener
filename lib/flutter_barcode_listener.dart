@@ -20,6 +20,13 @@ class BarcodeKeyboardListener extends StatefulWidget {
   final Duration _bufferDuration;
   final bool useKeyDownEvent;
 
+  /// Make barcode scanner return case sensitive characters
+  ///
+  /// Default value is false, It will sent scanned barcode with case sensitive
+  /// characters. It listen to [LogicalKeyboardKey.shiftLeft]
+  /// Currently support for Android
+  final bool caseSensitive;
+
   /// This widget will listen for raw PHYSICAL keyboard events
   /// even when other controls have primary focus.
   /// It will buffer all characters coming in specifed `bufferDuration` time frame
@@ -41,14 +48,16 @@ class BarcodeKeyboardListener extends StatefulWidget {
       /// Maximum time between two key events.
       /// If time between two key events is longer than this value
       /// previous keys will be ignored.
-      Duration bufferDuration = hundredMs})
+      Duration bufferDuration = hundredMs,
+      this.caseSensitive = false,
+      })
       : _onBarcodeScanned = onBarcodeScanned,
         _bufferDuration = bufferDuration,
         super(key: key);
 
   @override
   _BarcodeKeyboardListenerState createState() => _BarcodeKeyboardListenerState(
-      _onBarcodeScanned, _bufferDuration, useKeyDownEvent);
+      _onBarcodeScanned, _bufferDuration, useKeyDownEvent, caseSensitive);
 }
 
 const Duration aSecond = Duration(seconds: 1);
@@ -67,8 +76,12 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
 
   final bool _useKeyDownEvent;
 
+  final bool _caseSensitive;
+
+  bool _isShiftPressed = false;
+
   _BarcodeKeyboardListenerState(this._onBarcodeScannedCallback,
-      this._bufferDuration, this._useKeyDownEvent) {
+      this._bufferDuration, this._useKeyDownEvent, this._caseSensitive) {
     RawKeyboard.instance.addListener(_keyBoardCallback);
     _keyboardSubscription =
         _controller.stream.where((char) => char != null).listen(onKeyEvent);
@@ -107,12 +120,23 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
 
   void _keyBoardCallback(RawKeyEvent keyEvent) {
     if (keyEvent.logicalKey.keyId > 255 &&
-        keyEvent.data.logicalKey != LogicalKeyboardKey.enter) return;
+        keyEvent.data.logicalKey != LogicalKeyboardKey.enter &&
+        keyEvent.data.logicalKey != LogicalKeyboardKey.shiftLeft) return;
     if ((!_useKeyDownEvent && keyEvent is RawKeyUpEvent) ||
         (_useKeyDownEvent && keyEvent is RawKeyDownEvent)) {
       if (keyEvent.data is RawKeyEventDataAndroid) {
-        _controller.sink.add(String.fromCharCode(
-            ((keyEvent.data) as RawKeyEventDataAndroid).codePoint));
+        if (keyEvent.data.logicalKey == LogicalKeyboardKey.shiftLeft) {
+          _isShiftPressed = true;
+        } else {
+          if (_isShiftPressed && _caseSensitive) {
+            _isShiftPressed = false;
+            _controller.sink.add(String.fromCharCode(
+                ((keyEvent.data) as RawKeyEventDataAndroid).codePoint).toUpperCase());
+          } else {
+            _controller.sink.add(String.fromCharCode(
+                ((keyEvent.data) as RawKeyEventDataAndroid).codePoint));
+          }
+        }
       } else if (keyEvent.data is RawKeyEventDataFuchsia) {
         _controller.sink.add(String.fromCharCode(
             ((keyEvent.data) as RawKeyEventDataFuchsia).codePoint));
