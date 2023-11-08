@@ -8,7 +8,7 @@ class SecondScreen extends StatelessWidget {
       body: Center(
         child: Text(
           'Barcode callback is not firing here because parent widget isn\'t visible',
-          style: Theme.of(context).textTheme.headline5,
+          style: Theme.of(context).textTheme.headlineSmall,
         ),
       ),
     );
