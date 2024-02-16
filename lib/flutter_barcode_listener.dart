@@ -119,15 +119,22 @@ class _BarcodeKeyboardListenerState extends State<BarcodeKeyboardListener> {
   }
 
   bool _keyBoardCallback(KeyEvent keyEvent) {
-    if (keyEvent.logicalKey.keyId > 255 &&
-        keyEvent.logicalKey != LogicalKeyboardKey.enter &&
-        keyEvent.logicalKey != LogicalKeyboardKey.shiftLeft) return false;
-    if ((!_useKeyDownEvent && keyEvent is KeyUpEvent) ||
-        (_useKeyDownEvent && keyEvent is KeyDownEvent)) {
-      if (keyEvent.logicalKey == LogicalKeyboardKey.enter) {
+    if ((!_useKeyDownEvent && keyEvent is KeyUpEvent)
+              || (_useKeyDownEvent && keyEvent is KeyDownEvent)) {
+      if (keyEvent.logicalKey == LogicalKeyboardKey.shiftLeft) {
+        debugPrint("shift press");
+        _isShiftPressed = true;
+      } else if (keyEvent.logicalKey == LogicalKeyboardKey.enter) {
         _controller.sink.add(lineFeed);
-      } else if (keyEvent.logicalKey.keyId >= 0x20 && keyEvent.logicalKey.keyId <= 0x7A) {
-        _controller.sink.add(String.fromCharCode(keyEvent.logicalKey.keyId));
+      } else if (keyEvent.logicalKey.keyId >= 0x20
+                    && keyEvent.logicalKey.keyId <= 0x7A) {
+        var char = String.fromCharCode(keyEvent.logicalKey.keyId);
+        debugPrint("key $char, $_isShiftPressed");
+        if (_isShiftPressed && _caseSensitive) {
+          _isShiftPressed = false;
+          char = char.toUpperCase();
+        }
+        _controller.sink.add(char);
       }
     }
     return false;
